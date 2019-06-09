@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.3.xsd">
+
+	<context:property-placeholder
+		location="classpath:db.properties" />
+
+	<context:component-scan
+		base-package="com.jurisdiction">
+		<context:exclude-filter type="annotation"
+			expression="org.springframework.web.servlet.mvc.Controller" />
+	</context:component-scan>
+
+	<bean id="dataSource"
+		class="com.alibaba.druid.pool.DruidDataSource">
+		<property name="driverClassName" value="{driverClass}"></property>
+		<property name="dbType" value="{dbType}"></property>
+		<property name="url" value="{jdbcUrl}"></property>
+		<property name="username" value="{username}"></property>
+		<property name="password" value="{password}"></property>
+	</bean>
+
+
+	<bean id="sqlSessionFactoryBean"
+		class="com.baomidou.mybatisplus.extension.spring.MybatisSqlSessionFactoryBean">
+		<property name="dataSource" ref="dataSource"></property>
+		<property name="typeAliasesPackage"
+			value="com.jurisdiction.entity"></property>
+		<property name="globalConfig" ref="globalConfig"></property>
+		<property name="plugins">
+			<list>
+				<bean
+					class="com.baomidou.mybatisplus.extension.plugins.PaginationInterceptor"></bean>
+				<bean
+					class="com.baomidou.mybatisplus.extension.plugins.PerformanceInterceptor">
+					<property name="maxTime" value="1000"></property>
+					<property name="format" value="true"></property>
+				</bean>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="globalConfig"
+		class="com.baomidou.mybatisplus.core.config.GlobalConfig">
+		<property name="dbConfig">
+			<bean
+				class="com.baomidou.mybatisplus.core.config.GlobalConfig.DbConfig">
+				<property name="idType" value="0"></property>
+				<property name="tablePrefix" value="tab_"></property>
+			</bean>
+		</property>
+	</bean>
+
+	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+		<property name="basePackage" value="com.jurisdiction.mapper"></property>
+	</bean>
+
+
+</beans>
